@@ -12,7 +12,7 @@ import java.util.List;
 
 public class AthleteServer {
 private static final int SERVER_PORT = 12345;
-private static final String LOG_FILENAME = "logs.txt";
+private static final String LOG_FILENAME = "Workoutlogs.txt";
 
 private static List<PrintWriter> activeClients = new ArrayList<>();
 public static void main(String[] args) throws IOException {
@@ -22,7 +22,7 @@ ServerSocket listener = new ServerSocket(SERVER_PORT);
 while (true) {
 try {
 Socket incomingClient = listener.accept();
-System.out.println("➡ Client joined: " + incomingClient.getInetAddress());
+System.out.println("Client joined: " + incomingClient.getInetAddress());
 new ClientHandler(incomingClient).start();} 
 catch (IOException e) {
 System.out.println("Something went wrong accepting a client: " + e.getMessage());
@@ -56,7 +56,7 @@ writer.println(incomingMessage);
 }}
 }} 
 catch (IOException ex) {
-System.out.println("Oops, lost a client: " + ex.getMessage());} 
+System.out.println("lost a client: " + ex.getMessage());} 
 finally {
 try {
 clientSocket.close();} 
