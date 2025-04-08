@@ -78,7 +78,7 @@ while ((incoming = reader.readLine()) != null) {
 logArea.append(incoming + "\n");
 }
 } catch (IOException e) {
-logArea.append("Oops... lost connection to server.\n");
+logArea.append("lost connection to server");
 }
 }).start();
 
