@@ -103,7 +103,7 @@ String currentDate = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
 String logMessage = String.format("[%s] %s – %s – %.2f hrs", currentDate, name, sport, hours);
 
 writer.println(logMessage); 
-FileWriter fw = new FileWriter("logs.txt", true); 
+FileWriter fw = new FileWriter("Workoutlogs.txt", true); 
 BufferedWriter bw = new BufferedWriter(fw);
 String message = null;
 bw.write(message + "\n");
