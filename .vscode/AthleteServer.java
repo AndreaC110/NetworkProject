@@ -16,7 +16,7 @@ private static final String LOG_FILENAME = "Workoutlogs.txt";
 
 private static List<PrintWriter> activeClients = new ArrayList<>();
 public static void main(String[] args) throws IOException {
-System.out.println("🏃 Athlete Log Server is up and running on port " + SERVER_PORT);
+System.out.println(" Athlete Log Server is running on port " + SERVER_PORT);
 ServerSocket listener = new ServerSocket(SERVER_PORT);
 
 while (true) {
