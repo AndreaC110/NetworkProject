@@ -36,11 +36,11 @@ hoursInput = new JTextField(5);
 JButton sendBtn = new JButton("Submit");
 
 JPanel inputPanel = new JPanel();
-inputPanel.add(new JLabel("Name:"));
+inputPanel.add(new JLabel("Athlete Name:"));
 inputPanel.add(nameInput);
 inputPanel.add(new JLabel("Sport:"));
 inputPanel.add(sportInput);
-inputPanel.add(new JLabel("Hours:"));
+inputPanel.add(new JLabel("Number of Hours:"));
 inputPanel.add(hoursInput);
 inputPanel.add(sendBtn);
 
