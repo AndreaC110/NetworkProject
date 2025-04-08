@@ -16,79 +16,97 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-
-
 public class AthleteClient {
-private BufferedReader in;
-private PrintWriter out;
+private BufferedReader reader;
+private PrintWriter writer;
 private JTextArea logArea;
-private JTextField nameField, sportField, timeField;
+private JTextField nameInput;
+private JTextField sportInput;
+private JTextField hoursInput;
 
-public AthleteClient(String serverIP) {
-JFrame frame = new JFrame("Athlete Time Logger");
+public AthleteClient(String serverAddress) {
+JFrame frame = new JFrame("Athlete Logger"); 
 logArea = new JTextArea(20, 50);
-logArea.setEditable(false);
+logArea.setEditable(false);  
 
-nameField = new JTextField(10);
-sportField = new JTextField(10);
-timeField = new JTextField(5);
-JButton sendButton = new JButton("Log Time");
+nameInput = new JTextField(10);
+sportInput = new JTextField(10);
+hoursInput = new JTextField(5);
+
+JButton sendBtn = new JButton("Submit");
 
 JPanel inputPanel = new JPanel();
-inputPanel.add(new JLabel("Athlete Name:"));
-inputPanel.add(nameField);
+inputPanel.add(new JLabel("Name:"));
+inputPanel.add(nameInput);
 inputPanel.add(new JLabel("Sport:"));
-inputPanel.add(sportField);
-inputPanel.add(new JLabel("Number of Hours:"));
-inputPanel.add(timeField);
-inputPanel.add(sendButton);
+inputPanel.add(sportInput);
+inputPanel.add(new JLabel("Hours:"));
+inputPanel.add(hoursInput);
+inputPanel.add(sendBtn);
 
 frame.getContentPane().add(new JScrollPane(logArea), BorderLayout.CENTER);
 frame.getContentPane().add(inputPanel, BorderLayout.SOUTH);
+
 frame.pack();
 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 frame.setVisible(true);
 
-sendButton.addActionListener(e -> sendLog());
-timeField.addActionListener(e -> sendLog());
+sendBtn.addActionListener(e -> submitLog());
+hoursInput.addActionListener(e -> submitLog()); 
 
         try {
-Socket socket = new Socket(serverIP, 12345);
-in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-out = new PrintWriter(socket.getOutputStream(), true);
-new Thread(() -> { try {
-String line;
-while ((line = in.readLine()) != null) {
-logArea.append(line + "\n");
+Socket connection = new Socket(serverAddress, 12345);  
+reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+writer = new PrintWriter(connection.getOutputStream(), true);
+
+new Thread(() -> {
+try {
+String incoming;
+while ((incoming = reader.readLine()) != null) {
+logArea.append(incoming + "\n");
 }
 } catch (IOException e) {
-logArea.append("Connection lost.\n");
+logArea.append("Oops... lost connection to server.\n");
 }
 }).start();
 
-} catch (IOException ex) {
-JOptionPane.showMessageDialog(frame, "Connection failed: " + ex.getMessage());
-}}
-private void sendLog() {
-String name = nameField.getText().trim();
-String sport = sportField.getText().trim();
-String hours = timeField.getText().trim();
-if (!name.isEmpty() && !sport.isEmpty() && !hours.isEmpty()) {try {
-double timeValue = Double.parseDouble(hours);
-String date = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
-String log = String.format("[%s] %s – %s – %.2f hrs", date, name, sport, timeValue);
-out.println(log);
-nameField.setText("");
-sportField.setText("");
-timeField.setText("");
-} catch (NumberFormatException e) {
-JOptionPane.showMessageDialog(null, "Enter a valid number for hours.");}} else {
-JOptionPane.showMessageDialog(null, "Fill in all fields.");
-}}
+} catch (IOException connEx) {
+JOptionPane.showMessageDialog(frame, "Could not connect: " + connEx.getMessage());
+}
+}
+
+    private void submitLog() {
+String name = nameInput.getText().trim();
+String sport = sportInput.getText().trim();
+String hoursStr = hoursInput.getText().trim();
+
+if (name.isEmpty() || sport.isEmpty() || hoursStr.isEmpty()) {
+JOptionPane.showMessageDialog(null, "Please fill out all the fields.");
+return;
+        }
+try {
+double hours = Double.parseDouble(hoursStr);
+
+String currentDate = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
+String logMessage = String.format("[%s] %s – %s – %.2f hrs", currentDate, name, sport, hours);
+
+writer.println(logMessage); 
+
+nameInput.setText("");
+sportInput.setText("");
+hoursInput.setText("");
+
+} 
+catch (NumberFormatException numEx) {
+JOptionPane.showMessageDialog(null, "Please enter a valid number for hours.");
+}
+}
 
 public static void main(String[] args) {
-String ip = JOptionPane.showInputDialog("Enter Server IP Address:");
-if (ip != null && !ip.trim().isEmpty()) {
-new AthleteClient(ip);
+String ipAddr = JOptionPane.showInputDialog("Enter IP address:");
+if (ipAddr != null && !ipAddr.trim().isEmpty()) {
+new AthleteClient(ipAddr);
+} else {
 }}
 }
+
