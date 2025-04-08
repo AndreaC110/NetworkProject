@@ -61,14 +61,12 @@ public class AthleteClient {
             }
         });
 
-        // 🔌 Establish connection to server on port 12345
         try {
             int port = 12345;
             Socket connection = new Socket(serverAddress, port);
             reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             writer = new PrintWriter(connection.getOutputStream(), true);
 
-            // 🧵 Start thread to listen for server messages
             new Thread(this::extracted).start();
 
         } catch (IOException connEx) {
