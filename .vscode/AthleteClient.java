@@ -66,7 +66,7 @@ submitLog();
     }
 }); 
 
-        try {
+    try {
 Socket connection = new Socket(serverAddress, 12345);  
 reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 writer = new PrintWriter(connection.getOutputStream(), true);
@@ -87,7 +87,7 @@ JOptionPane.showMessageDialog(frame, "Could not connect: " + connEx.getMessage()
 }
 }
 
-    private void submitLog() throws IOException {
+private void submitLog() throws IOException {
 String name = nameInput.getText().trim();
 String sport = sportInput.getText().trim();
 String hoursStr = hoursInput.getText().trim();
