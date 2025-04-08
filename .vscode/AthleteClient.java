@@ -1,5 +1,7 @@
 import java.awt.BorderLayout;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -51,8 +53,18 @@ frame.pack();
 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 frame.setVisible(true);
 
-sendBtn.addActionListener(e -> submitLog());
-hoursInput.addActionListener(e -> submitLog()); 
+sendBtn.addActionListener(e -> {
+try {
+submitLog();
+} catch (IOException e1) { e1.printStackTrace();
+}
+});
+hoursInput.addActionListener(e -> {
+try {
+submitLog();
+} catch (IOException e1) {e1.printStackTrace();
+    }
+}); 
 
         try {
 Socket connection = new Socket(serverAddress, 12345);  
@@ -75,7 +87,7 @@ JOptionPane.showMessageDialog(frame, "Could not connect: " + connEx.getMessage()
 }
 }
 
-    private void submitLog() {
+    private void submitLog() throws IOException {
 String name = nameInput.getText().trim();
 String sport = sportInput.getText().trim();
 String hoursStr = hoursInput.getText().trim();
@@ -91,6 +103,11 @@ String currentDate = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
 String logMessage = String.format("[%s] %s – %s – %.2f hrs", currentDate, name, sport, hours);
 
 writer.println(logMessage); 
+FileWriter fw = new FileWriter("logs.txt", true); 
+BufferedWriter bw = new BufferedWriter(fw);
+String message = null;
+bw.write(message + "\n");
+bw.close();
 
 nameInput.setText("");
 sportInput.setText("");
@@ -109,4 +126,5 @@ new AthleteClient(ipAddr);
 } else {
 }}
 }
+
 
