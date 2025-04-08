@@ -9,45 +9,64 @@ import java.util.List;
 
 public class AthleteServer {
 private static final int PORT = 12345;
-private static List<PrintWriter> clientWriters = new ArrayList<>();
+
+private static List<PrintWriter> clientList = new ArrayList<>();
 
 public static void main(String[] args) throws IOException {
-System.out.println("Athlete Log Server started on port " + PORT);
-ServerSocket serverSocket = new ServerSocket(PORT);
+System.out.println("Starting Athlete Logging Server on port " + PORT);
+
+ServerSocket server = new ServerSocket(PORT);
 
 while (true) {
-Socket client = serverSocket.accept();
-System.out.println("New client connected: " + client.getInetAddress());
-new ClientHandler(client).start();
-}}
+try {
+Socket incoming = server.accept();
+System.out.println("Client joined: " + incoming.getInetAddress());
 
+new ClientHandler(incoming).start();
+} catch (IOException e) {
+System.err.println("Problem accepting client connection.");
+}
+}
+}
 private static class ClientHandler extends Thread {
-private Socket socket;
-private PrintWriter out;
+
+private Socket clientSocket;
+private PrintWriter clientOut;
 
 public ClientHandler(Socket socket) {
-this.socket = socket;}
+this.clientSocket = socket;}
 
-public void run() {try {
-BufferedReader in = new BufferedReader(
-new InputStreamReader(socket.getInputStream()));
-out = new PrintWriter(socket.getOutputStream(), true);
+public void run() {
+BufferedReader clientIn = null;
 
-synchronized (clientWriters) {clientWriters.add(out);}
+try {
+clientIn = new BufferedReader(
+new InputStreamReader(clientSocket.getInputStream()));
+clientOut = new PrintWriter(clientSocket.getOutputStream(), true);
 
-String message;
-while ((message = in.readLine()) != null) {
-System.out.println("Log: " + message);
-synchronized (clientWriters) {for (PrintWriter writer : clientWriters) {
-writer.println(message);
+synchronized (clientList) {
+clientList.add(clientOut); }
+
+String incomingMessage;
+while ((incomingMessage = clientIn.readLine()) != null) {
+System.out.println("Received log: " + incomingMessage);
+
+synchronized (clientList) {for (PrintWriter pw : clientList) {
+pw.println(incomingMessage);
 }}
-}} 
-catch (IOException e) {
-System.out.println("Client error: " + e.getMessage());
-} finally {try {
-socket.close();
-} catch (IOException ignored) {}
-synchronized (clientWriters) {
-clientWriters.remove(out);
-}}}
+}
+
+} catch (IOException ex) {
+System.out.println("Lost client: " + ex.getMessage());
+
+} finally {
+try {
+if (clientSocket != null) clientSocket.close();
+} catch (IOException ignored) {
+}
+synchronized (clientList) {
+clientList.remove(clientOut); 
 }}
+}}
+}
+
