@@ -56,7 +56,6 @@ public class AthleteServer {
                     System.out.println("[LOG] " + incomingMessage);
                     writeToFile(incomingMessage);
 
-                    // Broadcast to all clients
                     synchronized (activeClients) {
                         for (PrintWriter writer : activeClients) {
                             writer.println(incomingMessage);
