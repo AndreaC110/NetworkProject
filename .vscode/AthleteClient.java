@@ -74,9 +74,7 @@ public class AthleteClient {
         }
     }
 
-    /**
-     * 
-     */
+   
     private void extracted() {
         try {
             String incoming;
@@ -101,14 +99,13 @@ public class AthleteClient {
             String currentDate = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
             String logMessage = String.format("[%s] %s – %s – %.2f hrs", currentDate, name, sport, hours);
 
-            writer.println(logMessage); // Send to server
+            writer.println(logMessage); 
 
             FileWriter fw = new FileWriter("Workoutlogs.txt", true);
             BufferedWriter bw = new BufferedWriter(fw);
             bw.write(logMessage + "\n"); // Save to file
             bw.close();
 
-            // Clear input fields
             nameInput.setText("");
             sportInput.setText("");
             hoursInput.setText("");
